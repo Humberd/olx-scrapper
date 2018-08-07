@@ -36,7 +36,7 @@ async function readPage() {
   }
 
   console.log(`${getTime()} New Offer!!! `, firstOffer);
-  sendNotification(`${firstOffer.name} ${firstOffer.offerPrice}`, firstOffer.location, firstOffer.url);
+  sendNotification(`${firstOffer.name} ${firstOffer.price}`, firstOffer.location, firstOffer.url);
   lastOffer = firstOffer;
 }
 
@@ -88,5 +88,3 @@ setTimeout(async () => {
 setInterval(async () => {
   await readPage();
 }, interval);
-
-// sendNotification("Foo", "bar", "http://tibia.com/");
