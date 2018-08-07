@@ -31,7 +31,7 @@ async function readPage() {
 
   /* No new offer */
   if (firstOffer.id === lastOffer.id) {
-    console.log(`${getTime()} No new offer...`);
+    console.log(`${getTime()} [${firstOffer.name}] No new offer...`);
     return;
   }
 
