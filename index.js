@@ -4,6 +4,7 @@ const cheerio = require('cheerio');
 const opn = require('opn');
 
 const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/bialystok/?search[filter_float_price:to]=1400&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two';
+const interval = 5000;
 
 let lastOffer = null;
 
@@ -23,18 +24,18 @@ async function readPage() {
 
   /* When lastOffer is null, it means the program just started */
   if (lastOffer == null) {
-    console.log('Program Start!');
+    console.log(`${getTime()} Program Start!`);
     lastOffer = firstOffer;
     return;
   }
 
   /* No new offer */
   if (firstOffer.id === lastOffer.id) {
-    console.log('No new offer...');
+    console.log(`${getTime()} No new offer...`);
     return;
   }
 
-  console.log('New Offer!!!', firstOffer);
+  console.log(`${getTime()} New Offer!!! `, firstOffer);
   sendNotification(`${firstOffer.name} ${firstOffer.offerPrice}`, firstOffer.location, firstOffer.url);
   lastOffer = firstOffer;
 }
@@ -76,12 +77,16 @@ function sendNotification(title, message, url) {
   });
 }
 
+function getTime() {
+  return new Date(Date.now()).toLocaleString().split(' ')[1]
+}
+
 setTimeout(async () => {
   await readPage()
 });
 
 setInterval(async () => {
   await readPage();
-}, 5000);
+}, interval);
 
 // sendNotification("Foo", "bar", "http://tibia.com/");
