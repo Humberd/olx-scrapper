@@ -4,7 +4,6 @@ const cheerio = require('cheerio');
 const opn = require('opn');
 
 const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/bialystok/?search[filter_float_price:to]=1400&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two';
-// const olxUrl = 'https://www.olx.pl/oferty/';
 const interval = 5000;
 
 let lastOffer = null;
@@ -43,7 +42,7 @@ async function readPage() {
 
 function readOfferData($, offerIndex) {
   const index = offerIndex + 2;
-  const offer = {
+  return {
     name:
         $(`#offers_table > tbody > tr:nth-child(${index}) > td > div > table > tbody > tr:nth-child(1) > td.title-cell > div > h3 > a > strong`)
             .text(),
@@ -57,10 +56,10 @@ function readOfferData($, offerIndex) {
     url:
         $(`#offers_table > tbody > tr:nth-child(${index}) > td > div > table > tbody > tr:nth-child(1) > td.title-cell > div > h3 > a`)
             .attr('href'),
+    id:
+        $(`#offers_table > tbody > tr:nth-child(${index}) > td > div > table`)
+            .attr('data-id')
   };
-  offer.id = offer.url.split('#')[1];
-
-  return offer;
 }
 
 function sendNotification(title, message, url) {
