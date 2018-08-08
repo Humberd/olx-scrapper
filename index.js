@@ -6,7 +6,7 @@ const opn = require('opn');
 const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/bialystok/?search[filter_float_price:to]=1400&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two';
 const interval = 5000;
 
-let lastOffer = null;
+const previousIds = new Set();
 
 async function readPage() {
   const response = await fetch(olxUrl);
@@ -17,27 +17,31 @@ async function readPage() {
   let firstOffer;
   try {
     firstOffer = readOfferData($, 0);
+
+    if (!firstOffer.id) {
+      throw Error(`Id is null ${firstOffer}`)
+    }
   } catch (e) {
     console.error('Parsing template failed!', e);
     return
   }
 
-  /* When lastOffer is null, it means the program just started */
-  if (lastOffer == null) {
+  /* Program just started */
+  if (previousIds.length === 0) {
     console.log(`${getTime()} Program Start!`);
-    lastOffer = firstOffer;
+    previousIds.add(firstOffer.id);
     return;
   }
 
   /* No new offer */
-  if (firstOffer.id === lastOffer.id || !firstOffer.id) {
+  if (previousIds.has(firstOffer.id)) {
     console.log(`${getTime()} [${firstOffer.name}#${firstOffer.id}] No new offer...`);
     return;
   }
 
   console.log(`${getTime()} New Offer!!! `, firstOffer);
   sendNotification(`${firstOffer.name} ${firstOffer.price}`, firstOffer.location, firstOffer.url);
-  lastOffer = firstOffer;
+  previousIds.add(firstOffer.id)
 }
 
 function readOfferData($, offerIndex) {
@@ -63,7 +67,7 @@ function readOfferData($, offerIndex) {
 }
 
 function sendNotification(title, message, url) {
-  console.log(`Sending a notification: {title: '${title}', message: ${message}}`);
+  console.log(`Sending a notification: {title: '${title}', message: '${message}}'`);
   const options = {
     title,
     message,
