@@ -74,7 +74,9 @@ function sendNotification(title, message, url) {
 
   new WindowsToaster().notify(options, (error, response) => {
     console.log(response);
-    opn(url);
+    if (response === 'the user clicked on the toast.') {
+      opn(url);
+    }
   });
 }
 
