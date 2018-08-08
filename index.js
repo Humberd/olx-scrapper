@@ -30,7 +30,7 @@ async function readPage() {
   }
 
   /* No new offer */
-  if (firstOffer.id === lastOffer.id) {
+  if (firstOffer.id === lastOffer.id || !firstOffer.id) {
     console.log(`${getTime()} [${firstOffer.name}#${firstOffer.id}] No new offer...`);
     return;
   }
