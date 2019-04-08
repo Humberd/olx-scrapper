@@ -1,14 +1,15 @@
-const WindowsToaster = require('node-notifier').WindowsToaster;
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
-const opn = require('opn');
+const notifier = require("node-notifier");
+const fetch = require("node-fetch");
+const cheerio = require("cheerio");
+const opn = require("opn");
+const argv = require("yargs").argv;
 
-const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/bialystok/?search[filter_float_price:to]=1400&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two';
+const defaultMaxPrice = 1400;
 const interval = 5000;
-
+const roomsEnum = ["", "one", "two", "three", "four"];
 const previousIds = new Set();
 
-async function readPage() {
+async function readPage(olxUrl) {
   const response = await fetch(olxUrl);
   const text = await response.text();
 
@@ -16,14 +17,14 @@ async function readPage() {
 
   let firstOffer;
   try {
-    firstOffer = readOfferData($, 0);
+    firstOffer = readOfferData($, 1);
 
     if (!firstOffer.id) {
-      throw Error(`Id is null ${firstOffer}`)
+      throw Error(`Id is null ${JSON.stringify(firstOffer)}`);
     }
   } catch (e) {
-    console.error('Parsing template failed!', e);
-    return
+    console.error("Parsing template failed!", e);
+    return;
   }
 
   /* Program just started */
@@ -35,63 +36,87 @@ async function readPage() {
 
   /* No new offer */
   if (previousIds.has(firstOffer.id)) {
-    console.log(`${getTime()} [${firstOffer.name}#${firstOffer.id}] No new offer...`);
+    console.log(
+      `${getTime()} [${firstOffer.name}#${firstOffer.id}] No new offer...`
+    );
     return;
   }
 
   console.log(`${getTime()} New Offer!!! `, firstOffer);
-  sendNotification(`${firstOffer.name} ${firstOffer.price}`, firstOffer.location, firstOffer.url);
-  previousIds.add(firstOffer.id)
+  sendNotification(
+    `${firstOffer.name} ${firstOffer.price}`,
+    firstOffer.location,
+    firstOffer.url
+  );
+  previousIds.add(firstOffer.id);
 }
 
 function readOfferData($, offerIndex) {
   const index = offerIndex + 2;
   return {
-    name:
-        $(`#offers_table > tbody > tr:nth-child(${index}) > td > div > table > tbody > tr:nth-child(1) > td.title-cell > div > h3 > a > strong`)
-            .text(),
-    price:
-        $(`#offers_table > tbody > tr:nth-child(${index}) > td > div > table > tbody > tr:nth-child(1) > td.wwnormal.tright.td-price > div > p > strong`)
-            .text(),
-    location:
-        $(`#offers_table > tbody > tr:nth-child(${index}) > td > div > table > tbody > tr:nth-child(2) > td.bottom-cell > div > p > small:nth-child(1) > span`)
-            .text()
-            .trim(),
-    url:
-        $(`#offers_table > tbody > tr:nth-child(${index}) > td > div > table > tbody > tr:nth-child(1) > td.title-cell > div > h3 > a`)
-            .attr('href'),
-    id:
-        $(`#offers_table > tbody > tr:nth-child(${index}) > td > div > table`)
-            .attr('data-id')
+    name: $(
+      `#offers_table > tbody > tr:nth-child(${index}) .space.rel > h3`
+    ).text(),
+    price: $(
+      `#offers_table > tbody > tr:nth-child(${index}) .td-price .price`
+    ).text(),
+    location: $(`#offers_table > tbody > tr:nth-child(${index}) .space.rel > p`)
+      .text()
+      .trim(),
+    url: $(
+      `#offers_table > tbody > tr:nth-child(${index}) .space.rel > h3 a`
+    ).attr("href"),
+    id: $(
+      `#offers_table > tbody > tr:nth-child(${index}) > td > div > table`
+    ).attr("data-id")
   };
 }
 
 function sendNotification(title, message, url) {
-  console.log(`Sending a notification: {title: '${title}', message: '${message}}'`);
+  console.log(
+    `Sending a notification: {title: '${title}', message: '${message}}'`
+  );
   const options = {
     title,
     message,
     sound: true,
     wait: true,
-    type: 'info',
+    type: "info"
   };
 
-  new WindowsToaster().notify(options, (error, response) => {
-    console.log(response);
-    if (response === 'the user clicked on the toast.') {
-      opn(url);
-    }
+  notifier.notify(options);
+
+  notifier.on("click", function(notifierObject, options) {
+    opn(url);
   });
 }
 
 function getTime() {
-  return new Date(Date.now()).toLocaleString().split(' ')[1]
+  return new Date(Date.now()).toLocaleString().split(" ")[1];
 }
 
-setTimeout(async () => {
-  await readPage()
-});
+function startRead() {
+  function generateRoomQuery(roomsNumber) {
+    return Array(roomsNumber + 1)
+      .fill()
+      .map((_, i) => `&search[filter_enum_rooms][0]=${roomsEnum[i + 1]}`);
+  }
 
-setInterval(async () => {
-  await readPage();
-}, interval);
+  const roomsQueryUrl = `${
+    argv.rooms && argv.rooms < 5
+      ? generateRoomQuery(argv.rooms)
+      : "`&search[filter_enum_rooms][0]=one"
+  }"`;
+  const buildUrl = `https://www.olx.pl/nieruchomosci/mieszkania/wynajem/bialystok/?search[filter_float_price:to]=${
+    argv.maxPrice ? argv.maxPrice : defaultMaxPrice
+  }${roomsQueryUrl}`;
+  setTimeout(async () => {
+    await readPage(buildUrl);
+  });
+
+  setInterval(async () => {
+    await readPage(buildUrl);
+  }, interval);
+}
+
+startRead();
