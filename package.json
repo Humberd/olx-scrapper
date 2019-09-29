@@ -4,15 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node src/index.ts"
   },
   "author": "Maciej Sawicki <humberd.dev@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
+    "image-downloader": "^3.5.0",
+    "jsdom": "^15.1.1",
     "node-fetch": "^2.6.0",
     "node-notifier": "^6.0.0",
     "opn": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^12.2.4",
+    "@types/node-fetch": "^2.5.2",
+    "@types/node-notifier": "^5.4.0",
+    "@types/opn": "^5.5.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3"
   }
 }

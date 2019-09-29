@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const opn = require('opn');
 
-const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/bialystok/?search[filter_float_price:to]=1400&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two';
+const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?search[filter_enum_builttype][0]=apartamentowiec&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two&search[district_id]=353';
 const interval = 5000;
 
 const previousIds = new Set();
