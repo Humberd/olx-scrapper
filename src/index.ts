@@ -1,11 +1,12 @@
 import { getEntities } from './dom-parser';
 import { sendNotification } from './notifications';
 import { OfferEntity } from './_models/offer-entity';
+import { Visited } from './visited';
 
 const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?search[filter_enum_builttype][0]=apartamentowiec&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two&search[district_id]=353';
 const interval = 5000;
 
-const visited = new Set<string>();
+const visited = new Visited();
 
 async function tick(firstRun: boolean) {
   const entities = (await getEntities(olxUrl)).reverse();
@@ -39,6 +40,7 @@ function saveVisited(entities: OfferEntity[]) {
 }
 
 setTimeout(async () => {
+  await visited.init();
   await tick(true);
 });
 

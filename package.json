@@ -13,12 +13,14 @@
     "jsdom": "^15.1.1",
     "node-fetch": "^2.6.0",
     "node-notifier": "^6.0.0",
+    "node-persist": "^3.0.5",
     "opn": "^6.0.0"
   },
   "devDependencies": {
     "@types/jsdom": "^12.2.4",
     "@types/node-fetch": "^2.5.2",
     "@types/node-notifier": "^5.4.0",
+    "@types/node-persist": "0.0.33",
     "@types/opn": "^5.5.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"
