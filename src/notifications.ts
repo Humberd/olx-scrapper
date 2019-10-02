@@ -2,15 +2,18 @@ import { notify } from 'node-notifier';
 import { OfferEntity } from './_models/offer-entity';
 import * as opn from 'opn';
 import { Notification } from 'node-notifier/notifiers/toaster';
+import { downloadImage, removeImage } from './image-saver';
 
-const path = require('path');
+export async function sendNotification(entity: OfferEntity) {
+  const fileName = `${entity.id}.webp`;
+  const localURL = await downloadImage(entity.image, fileName);
 
+  console.log({localURL});
 
-export function sendNotification(entity: OfferEntity) {
   const options: Notification = {
     title: entity.name,
     message: entity.price,
-    icon: path.join(__dirname, '../image.webp'),
+    icon: localURL,
     sound: true,
     wait: true,
   };
@@ -20,5 +23,7 @@ export function sendNotification(entity: OfferEntity) {
     if (notificationClicked) {
       opn(entity.url);
     }
+
+    removeImage(localURL)
   });
 }

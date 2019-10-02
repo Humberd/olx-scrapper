@@ -9,7 +9,7 @@
   "author": "Maciej Sawicki <humberd.dev@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "image-downloader": "^3.5.0",
+    "fs-extra": "^8.1.0",
     "jsdom": "^15.1.1",
     "node-fetch": "^2.6.0",
     "node-notifier": "^6.0.0",
@@ -17,6 +17,7 @@
     "opn": "^6.0.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.0.0",
     "@types/jsdom": "^12.2.4",
     "@types/node-fetch": "^2.5.2",
     "@types/node-notifier": "^5.4.0",

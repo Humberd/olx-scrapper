@@ -25,7 +25,7 @@ async function tick(firstRun: boolean) {
 
   for (const filteredEntity of filteredEntities) {
     console.log(filteredEntity);
-    sendNotification(filteredEntity);
+    await sendNotification(filteredEntity);
   }
 }
 
