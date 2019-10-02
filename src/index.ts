@@ -3,7 +3,7 @@ import { sendNotification } from './notifications';
 import { OfferEntity } from './_models/offer-entity';
 import { Visited } from './visited';
 
-const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?search[filter_enum_builttype][0]=apartamentowiec&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two&search[district_id]=353';
+const olxUrl = 'https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?search[filter_float_price:to]=3000&search[filter_float_price:from]=2000&search[filter_enum_rooms][0]=one&search[filter_enum_rooms][1]=two&search[district_id]=353';
 const interval = 5000;
 
 const visited = new Visited();
